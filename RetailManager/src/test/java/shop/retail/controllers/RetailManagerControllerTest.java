@@ -20,9 +20,9 @@ import java.util.Locale;
  * @author Sangram
  *
  */
-//@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = RetailShopController.class)
-//@AutoConfigureMockMvc
+/*@RunWith(SpringRunner.class)
+@SpringBootTest(classes = RetailShopController.class)
+@AutoConfigureMockMvc*/
 public class RetailManagerControllerTest extends BaseTest{
 
 	/*@Autowired

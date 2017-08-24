@@ -1,9 +1,16 @@
 package shop.retail.service;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import shop.retail.Config;
 import shop.retail.RetailMessages;
 import shop.retail.dao.RetailShopDao;
-import shop.retail.datastore.ShopInMemoryArray;
 import shop.retail.exception.RetailManagerException;
 import shop.retail.models.Shop;
 import shop.retail.models.ShopAddress;
@@ -12,18 +19,11 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 
  * @author Sangram
- *
+ * 
  */
 @Service
 public class ShopLocatorImpl implements ShopLocator {
@@ -32,52 +32,57 @@ public class ShopLocatorImpl implements ShopLocator {
 
 	@Autowired
 	private RetailShopDao retailShopDao;
-	
-	@Autowired
-	private ShopInMemoryArray inMemoryArray;
 
 	@Override
 	public Shop getShopById(long id) {
 		return retailShopDao.getShopById(id);
 	}
-	
+
 	@Override
-	public void addShop(Shop shop) {
+	public Shop addShop(Shop shop) {
 		validate(shop);
+		Shop oldShop = retailShopDao.shopExists(shop.getShopName());
 		// Query string for the Geo API
 		ShopAddress shop_address = shop.getShopAddress();
 		StringBuilder address = new StringBuilder(shop_address.getNumber())
 				.append(",").append(shop_address.getPostCode());
 		// Get the latitude & longitude
 		LatLng location = geoApiResolver(address.toString());
-		shop.setShopLatitude(location.lat);
-		shop.setShopLongitude(location.lng);
-		retailShopDao.addShop(shop);
+		shop_address.setShopLatitude(location.lat);
+		shop_address.setShopLongitude(location.lng);
+		Shop newShop = null;
+		if (null != oldShop) {
+			shop.setShopId(oldShop.getShopId());
+			newShop=retailShopDao.updateShop(shop);
+			newShop.setOldShopAddress(oldShop.getShopAddress());
+		} else {
+			retailShopDao.addShop(shop);
+			newShop = shop;
+		}
+		return newShop;
 	}
 
 	@Override
 	public Shop findNearest(LatLng location) {
-		List<Shop> shops = inMemoryArray.getAll();
+		List<Shop> shops = getAll();
 		if (shops == null || shops.isEmpty()) {
 			logger.info(RetailMessages.NO_SHOPS_ADDED);
 			throw new RetailManagerException(RetailMessages.NO_SHOPS_ADDED,
 					HttpStatus.OK);
 		}
 
-		double nearest = calculateDistance(location, new LatLng(shops.get(0)
-				.getShopLatitude(), shops.get(0).getShopLongitude()));
-		double temp;
+		double nearest = Double.MAX_VALUE;
+		double temp = 0;
 		Shop nearest_shop = shops.get(0);
-
-		for (int i = 1; i < shops.size(); i++) {
-			temp = calculateDistance(location, new LatLng(shops.get(i)
-					.getShopLatitude(), shops.get(i).getShopLongitude()));
+		for (Shop shop : shops) {
+			temp = calculateDistance(location, new LatLng(shop.getShopAddress()
+					.getShopLatitude(), shop.getShopAddress()
+					.getShopLongitude()));
 			if (temp < nearest) {
 				nearest = temp;
-				nearest_shop = shops.get(i);
+				nearest_shop = shop;
 			}
 		}
-
 		if (nearest == 0.0) {
 			logger.info("Found shop with an exact location match.");
 		}
@@ -86,7 +91,7 @@ public class ShopLocatorImpl implements ShopLocator {
 
 	@Override
 	public List<Shop> getAll() {
-		return inMemoryArray.getAll();
+		return retailShopDao.getAll();
 	}
 
 	public static LatLng geoApiResolver(String address_in_one_line) {
@@ -125,23 +130,14 @@ public class ShopLocatorImpl implements ShopLocator {
 	}
 
 	private void validate(Shop shop) {
-		/*if (shop == null || shop.getShopAddress() == null
+		if (shop == null || shop.getShopAddress() == null
 				|| shop.getShopAddress().getNumber() == null
 				|| shop.getShopAddress().getPostCode() == 0) {
 			logger.debug("Invalid shop - " + shop);
 			throw new RetailManagerException(
 					"Invalid shop details. No Address found",
 					HttpStatus.BAD_REQUEST);
-		}*/
+		}
 	}
 
-	/*@Override
-	public ShopInMemoryArray getInMemoryArray() {
-		return inMemoryArray;
-	}
-
-	@Override
-	public void setInMemoryArray(ShopInMemoryArray inMemoryArray) {
-		this.inMemoryArray = inMemoryArray;
-	}*/
 }

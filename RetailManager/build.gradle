@@ -57,6 +57,7 @@ dependencies {
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "com.jayway.jsonpath:json-path"
     testCompile "io.rest-assured:spring-mock-mvc:3.0.0"
+    compile "com.h2database:h2"
 }
 
 task wrapper(type: Wrapper) {

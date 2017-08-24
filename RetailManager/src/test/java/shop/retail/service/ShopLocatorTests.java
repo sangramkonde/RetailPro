@@ -2,6 +2,7 @@ package shop.retail.service;
 
 import shop.retail.BaseTest;
 import shop.retail.Config;
+import shop.retail.dao.RetailShopDao;
 import shop.retail.exception.RetailManagerException;
 import shop.retail.models.Shop;
 import shop.retail.service.ShopLocatorImpl;
@@ -13,6 +14,7 @@ import com.google.maps.model.LatLng;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
@@ -22,6 +24,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 //@RunWith(SpringJUnit4ClassRunner.class)
 public class ShopLocatorTests extends BaseTest{
 
+	private ShopLocator shopLocator;
+	private RetailShopDao retailShopDao;
+	
+	/*@Before
+    public void setUp() {
+		retailShopDao = Mockito.mock(RetailShopDao.class);
+		shopLocator = new ShopLocator();
+    }*/
 	/*LatLng locationToTest = null;
 
     @Before

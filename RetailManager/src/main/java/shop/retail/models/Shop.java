@@ -9,7 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 
@@ -20,26 +26,26 @@ import javax.validation.constraints.NotNull;
  * 
  */
 @Entity
-@Table(name="shop")
+@Table(name = "shop")
 public class Shop {
 
+	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="shop_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "shop_id")
 	private long shopId;
-	
-	@Column(name="shop_name" ,unique = true)
+
+	@Column(name = "shop_name", unique = true)
 	private String shopName;
-	@Column(name="latitude")
-	private Double shopLatitude;
-	@Column(name="longitude")
-	private Double shopLongitude;
-	
+
 	@NotNull
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "shop_address_id")
 	private ShopAddress shopAddress;
-	
+
+	@Transient
+	@JsonInclude(value= JsonInclude.Include.NON_NULL)
+	private ShopAddress oldShopAddress;
 	public long getShopId() {
 		return shopId;
 	}
@@ -84,47 +90,17 @@ public class Shop {
 		this.shopAddress = shopAddress;
 	}
 
-	/**
-	 * Gets the latitude of the shop
-	 * 
-	 * @return shopLatitude.
-	 */
-	public Double getShopLatitude() {
-		return shopLatitude;
+	public ShopAddress getOldShopAddress() {
+		return oldShopAddress;
 	}
 
-	/**
-	 * Sets the latitude of the shop.
-	 * 
-	 * @param shopLatitude
-	 */
-	public void setShopLatitude(Double shopLatitude) {
-		this.shopLatitude = shopLatitude;
-	}
-
-	/**
-	 * Gets the longitude of the shop
-	 * 
-	 * @return shopLongitude.
-	 */
-	public Double getShopLongitude() {
-		return shopLongitude;
-	}
-
-	/**
-	 * Sets the longitude of the shop.
-	 * 
-	 * @param shopLongitude
-	 */
-	public void setShopLongitude(Double shopLongitude) {
-		this.shopLongitude = shopLongitude;
+	public void setOldShopAddress(ShopAddress oldShopAddress) {
+		this.oldShopAddress = oldShopAddress;
 	}
 
 	@Override
 	public String toString() {
 		return "Shop [shopId=" + shopId + ", shopName=" + shopName
-				+ ", shopLatitude=" + shopLatitude + ", shopLongitude="
-				+ shopLongitude + ", shopAddress=" + shopAddress + "]";
+				+ ", shopAddress=" + shopAddress + "]";
 	}
-
 }

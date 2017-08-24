@@ -9,8 +9,7 @@ public interface RetailShopDao {
 	public void addShop(Shop shop);
 	public Shop getShopById(long id);
 	public Shop shopExists(String shopName);
+	public Shop updateShop(Shop shop);
 	public Shop findNearest(LatLng location);
 	public List<Shop> getAll();
-	//ShopInMemoryArray getInMemoryArray();
-	//void setInMemoryArray(ShopInMemoryArray inMemoryArray);
 }

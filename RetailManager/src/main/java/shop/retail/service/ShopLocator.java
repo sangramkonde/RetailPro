@@ -13,10 +13,8 @@ import java.util.List;
  */
 public interface ShopLocator {
 
-	public void addShop(Shop shop);
+	public Shop addShop(Shop shop);
 	public Shop getShopById(long shopId);
 	public Shop findNearest(LatLng location);
 	public List<Shop> getAll();
-	//public ShopInMemoryArray getInMemoryArray();
-	//public void setInMemoryArray(ShopInMemoryArray inMemoryArray);
 }
