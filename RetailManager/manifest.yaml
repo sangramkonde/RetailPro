@@ -1,0 +1,7 @@
+applications:
+- name: retail-manager-rest-service
+  memory: 256M
+  instances: 1
+  host: rest-service
+  domain: guides.spring.io
+  path: build/libs/retail-manager-rest-service-1.0.jar
