@@ -15,6 +15,10 @@ import shop.retail.models.ShopAddress;
 
 import com.google.maps.model.LatLng;
 
+/**
+ * @author Sangram
+ *
+ */
 @Transactional
 @Repository
 public class RetailShopDaoImpl implements RetailShopDao {
@@ -28,12 +32,13 @@ public class RetailShopDaoImpl implements RetailShopDao {
 	}
 
 	@Override
-	public void addShop(Shop shop) {
+	public Shop addShop(Shop shop) {
 		entityManager.persist(shop);
+		return shop;
 	}
 
 	@Override
-	public Shop findNearest(LatLng location) {
+	public Shop findNearest(String longitude, String latitude) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -73,5 +78,10 @@ public class RetailShopDaoImpl implements RetailShopDao {
 		updatedShopAddress.setShopLongitude(shop.getShopAddress().getShopLongitude());
 		entityManager.flush();
 		return updatedShop;
+	}
+
+	@Override
+	public void deleteShop(long shopId) {
+		entityManager.remove(getShopById(shopId));
 	}
 }

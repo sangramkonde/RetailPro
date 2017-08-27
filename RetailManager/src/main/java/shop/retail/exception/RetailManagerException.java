@@ -11,41 +11,56 @@ import javax.validation.constraints.NotNull;
  * @author Sangram
  *
  */
-@SuppressWarnings("serial")
 public class RetailManagerException extends RuntimeException {
 
-	@NotNull
+	private static final long serialVersionUID = 1L;
+	private String errorMessage;
+	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public RetailManagerException(String errorMessage) {
+		super(errorMessage);
+		this.errorMessage = errorMessage;
+	}
+
+	public RetailManagerException() {
+		super();
+	}
+
+	/*@NotNull
 	private HttpStatus httpStatusCode;
 
-	/**
+	*//**
 	 * Use to initialize the exception by setting message and status code
 	 * 
 	 * @param message
 	 * @param httpStatusCode
-	 */
+	 *//*
 	public RetailManagerException(Exception e, String message,
 			HttpStatus httpStatusCode) {
 		super(message, e);
 		this.httpStatusCode = httpStatusCode;
 	}
 
-	/**
+	*//**
 	 * Use to initialize the exception by setting message and status code
 	 * 
 	 * @param message
 	 * @param httpStatusCode
-	 */
+	 *//*
 	public RetailManagerException(String message, HttpStatus httpStatusCode) {
 		super(message);
 		this.httpStatusCode = httpStatusCode;
 	}
 
-	/**
+	*//**
 	 * Use to get the http status code on the basis of operation
 	 * 
 	 * @return httpStatusCode
-	 */
+	 *//*
 	public HttpStatus getHttpStatusCode() {
 		return httpStatusCode;
-	}
+	}*/
 }

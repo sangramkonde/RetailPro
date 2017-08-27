@@ -1,7 +1,6 @@
 package shop.retail.service;
 
 import com.google.maps.model.LatLng;
-import shop.retail.datastore.ShopInMemoryArray;
 import shop.retail.models.Shop;
 import java.util.List;
 
@@ -15,6 +14,7 @@ public interface ShopLocator {
 
 	public Shop addShop(Shop shop);
 	public Shop getShopById(long shopId);
-	public Shop findNearest(LatLng location);
+	public void deleteShop(long shopId);
+	public Shop findNearest(String longitude, String latitude);
 	public List<Shop> getAll();
 }

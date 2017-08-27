@@ -13,6 +13,10 @@ public class RetailMessages {
 	public static final String INVALID_LOCATION = "Invalid value for longitude and latitude";
 	public static final String SERVICE_UNAVAILABLE = "Service is unavailable. Please try again.";
 	public static final String NO_SHOPS_ADDED = "No shops added yet. Please add some shops and try again.";
+	public static final String NO_SHOPS_FOUND = "No shop found for given id";
 	public static final String NOT_PROCESSED = "There is an error processing your request.";
 	public static final String ERROR_SHOP = "Error getting nearest shop for location - ";
+	public static final String GEO_LOCATION_ERROR = "Error while retrieving location data for the shop. Please try again";	
+	public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
+	public static final String INVALID_SHOP = "Invalid shop details. No Address found";
 }

@@ -28,7 +28,7 @@ public class SwaggerTest {
 	}
 
 	private Predicate<String> postPaths() {
-		return or(regex("/shop/add"), regex("/shop/find"));
+		return or(regex("/shop"), regex("/shop/find"));
 	}
 
 	private ApiInfo apiInfo() {

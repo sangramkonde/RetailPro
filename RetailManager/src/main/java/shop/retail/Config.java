@@ -1,5 +1,7 @@
 package shop.retail;
 
+import java.util.ResourceBundle;
+
 /**
  * This class stores the GEO_API_KEY which is used to locate the shop
  * @author Sangram
@@ -7,6 +9,11 @@ package shop.retail;
  */
 public class Config {
 
-	// below API_KEY has been created under my mail account
-	public static String GEO_API_KEY = "AIzaSyA0I0_VRGOuh-CFMjWBQGI2ZX7rfluxMtA";
+	public static String GEO_API_KEY;
+	
+	@SuppressWarnings("unused")
+	public static void loadProperties(){
+		ResourceBundle bundle = ResourceBundle.getBundle("global");
+		GEO_API_KEY=bundle.getString("GEO_API_KEY");
+	}
 }

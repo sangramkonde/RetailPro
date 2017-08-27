@@ -1,21 +1,25 @@
 package shop.retail.controllers;
 
-import com.google.maps.model.LatLng;
-
-import shop.retail.RetailMessages;
-import shop.retail.exception.RetailManagerException;
-import shop.retail.models.Shop;
-import shop.retail.service.ShopLocator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import shop.retail.RetailMessages;
+import shop.retail.exception.RetailManagerException;
+import shop.retail.models.Shop;
+import shop.retail.service.ShopLocator;
 
 /**
  * This is a controller class and used to manage the customer's request and
@@ -42,20 +46,17 @@ public class RetailShopController {
 
 	@GetMapping
 	public ResponseEntity<List<Shop>> getAllShop() {
-		List<Shop> shopList = shopLocator.getAll();
-		if(null == shopList || shopList.size() == 0){
-			throw new RetailManagerException(RetailMessages.NO_SHOPS_ADDED,
-					HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<List<Shop>>(shopList, HttpStatus.OK);
+
+		logger.info("Returning all the shop´s");
+		return new ResponseEntity<List<Shop>>(shopLocator.getAll(), HttpStatus.OK);
 	}
 
-	@GetMapping("{id}")
-	public ResponseEntity<Shop> getShop(@PathVariable("id") long shopId) {
+	@GetMapping("/{id}")
+	public ResponseEntity<Shop> getShop(@PathVariable("id") long shopId) throws RetailManagerException{
+		logger.info("Returning shop for id : "+shopId);
 		Shop shop = shopLocator.getShopById(shopId);
 		if (null == shop) {
-			throw new RetailManagerException(RetailMessages.NO_SHOPS_ADDED,
-					HttpStatus.NOT_FOUND);
+			throw new RetailManagerException(RetailMessages.NO_SHOPS_FOUND);
 		}
 		return new ResponseEntity<Shop>(shop, HttpStatus.OK);
 	}
@@ -63,32 +64,17 @@ public class RetailShopController {
 	@GetMapping(path = "/find")
 	public ResponseEntity<Shop> getNearestShop(
 			@RequestParam("customerLongitude") String longitude,
-			@RequestParam("customerLatitude") String latitude) {
-		try {
-			LatLng location = new LatLng(Double.parseDouble(latitude),
-					Double.parseDouble(longitude));
-			Shop shop = shopLocator.findNearest(location);
-			return new ResponseEntity<Shop>(shop, HttpStatus.OK);
-		} catch (NumberFormatException e) {
-			logger.error(RetailMessages.INVALID_LOCATION + " - " + longitude
-					+ ", " + latitude, e);
-			throw new RetailManagerException(e,
-					RetailMessages.INVALID_LOCATION, HttpStatus.BAD_REQUEST);
-		} catch (RetailManagerException rmse) {
-			throw rmse;
-		} catch (Exception e) {
-			logger.error(RetailMessages.ERROR_SHOP + latitude + ", "
-					+ longitude, e);
-			throw new RetailManagerException(e,
-					RetailMessages.SERVICE_UNAVAILABLE,
-					HttpStatus.SERVICE_UNAVAILABLE);
-		}
+			@RequestParam("customerLatitude") String latitude) throws RetailManagerException {
+		logger.info("Getting the nearest shop");
+		Shop shop = shopLocator.findNearest(longitude, latitude);
+		return new ResponseEntity<Shop>(shop, HttpStatus.OK);
 	}
 
-	@ExceptionHandler(value = RetailManagerException.class)
-	public String handler(RetailManagerException e, HttpServletResponse response) {
-		response.setStatus(e.getHttpStatusCode().value());
-		return e.getMessage();
+	@DeleteMapping("{id}")
+	public ResponseEntity<Void> deleteShop(@PathVariable("id") Integer shopId) throws RetailManagerException{
+		logger.info("Deleting shop for id : "+shopId);
+		shopLocator.deleteShop(shopId);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 
 }
