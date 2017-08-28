@@ -72,6 +72,6 @@ public class RetailManagerControllerTest{
 	@Test
 	public void getAllShop() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/shop").accept(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$", hasSize(2))).andDo(print());
+			.andExpect(jsonPath("$", hasSize(0))).andDo(print());
 	}
 }

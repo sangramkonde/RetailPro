@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -39,21 +40,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Sangram
  *
  */
-//@RunWith(SpringJUnit4ClassRunner.class)
 
-//extends BaseTest
-//@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {ShopLocatorTestConfiguration.class})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class ShopLocatorTests {
-/*	@Autowired
-	private ShopLocator shopLocator;*/
 	
-	@Mock
+	@Autowired
 	private RetailShopDao retailShopDao;
 	
-	@InjectMocks
 	@Autowired
-	@Qualifier
-	private ShopLocatorImpl shopLocatorImpl;
+	private ShopLocator shopLocator;
 	
 	@Before
 	public void setup(){
@@ -61,9 +57,8 @@ public class ShopLocatorTests {
 		
 	}
 	
-	
 	private Shop buildShopObject(String name, String number, int post,
-			Double latitude, Double longitude) {
+		Double latitude, Double longitude) {
 		Shop shop = new Shop();
 		ShopAddress shopAddress = new ShopAddress();
 		shop.setShopName(name);
@@ -75,7 +70,7 @@ public class ShopLocatorTests {
 		return shop;
 	}
 	
-	/*@Test
+	@Test
 	public void testGetAllShop(){
 		List<Shop> toDoList = new ArrayList<Shop>();
 		
@@ -100,10 +95,39 @@ public class ShopLocatorTests {
 		toDoList.add(Chennai);
 		when(retailShopDao.getAll()).thenReturn(toDoList);
 		
-		List<Shop> result = shopLocatorImpl.getAll();
+		List<Shop> result = shopLocator.getAll();
 		assertEquals(6, result.size());
 	}
-	*/
+	
+	@Test
+	public void testNearest() {
+		List<Shop> toDoList = new ArrayList<Shop>();
+		Shop Mumbai = buildShopObject("Shop  at Mumbai", "Number 1", 400307,
+				73.9823, 18.5793);
+		Shop Pune = buildShopObject("Shop at Pune", "Number 2", 900, 73.8796,
+				18.5529);
+		Shop Nashik = buildShopObject("Shop at Nashik", "Number 3", 83,
+				73.7997, 18.6298);
+		Shop Delhi = buildShopObject("Shop at Delhi", "Number 4", 545678,
+				88.3639, 22.5726);
+		Shop Agra = buildShopObject("Shop at Agra", "Number 5", 1, 77.4126,
+				23.2599);
+		Shop Chennai = buildShopObject("Shop at Chennai", "Number 6", 7,
+				72.8777, 19.076);
+		
+		toDoList.add(Mumbai);
+		toDoList.add(Pune);
+		toDoList.add(Nashik);
+		toDoList.add(Delhi);
+		toDoList.add(Agra);
+		toDoList.add(Chennai);
+		
+		when(shopLocator.getAll()).thenReturn(toDoList);
+		Shop shop =shopLocator.findNearest("22.5726", "88.3639");
+		assertEquals(shop.getShopName(),Delhi.getShopName());
+		
+	}
+	
 /*	@Autowired
 	private RetailShopDao retailShopDao;
 	LatLng locationToTest = null;
