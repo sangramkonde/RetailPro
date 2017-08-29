@@ -13,8 +13,6 @@ import org.springframework.stereotype.Repository;
 import shop.retail.models.Shop;
 import shop.retail.models.ShopAddress;
 
-import com.google.maps.model.LatLng;
-
 /**
  * @author Sangram
  *
@@ -39,7 +37,6 @@ public class RetailShopDaoImpl implements RetailShopDao {
 
 	@Override
 	public Shop findNearest(String longitude, String latitude) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -48,7 +45,6 @@ public class RetailShopDaoImpl implements RetailShopDao {
 	public List<Shop> getAll() {
 		String hql = "from Shop";
 		List<Shop> shopList =(List<Shop>)entityManager.createQuery(hql).getResultList();
-		// TODO Auto-generated method stub
 		return shopList;
 	}
 

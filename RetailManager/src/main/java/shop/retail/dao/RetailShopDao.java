@@ -3,7 +3,6 @@ package shop.retail.dao;
 import java.util.List;
 
 import shop.retail.models.Shop;
-import com.google.maps.model.LatLng;
 
 /**
  * @author Sangram

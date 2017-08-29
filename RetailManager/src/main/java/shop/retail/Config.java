@@ -11,7 +11,6 @@ public class Config {
 
 	public static String GEO_API_KEY;
 	
-	@SuppressWarnings("unused")
 	public static void loadProperties(){
 		ResourceBundle bundle = ResourceBundle.getBundle("global");
 		GEO_API_KEY=bundle.getString("GEO_API_KEY");

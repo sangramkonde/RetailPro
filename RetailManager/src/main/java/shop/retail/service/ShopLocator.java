@@ -1,8 +1,8 @@
 package shop.retail.service;
 
-import com.google.maps.model.LatLng;
-import shop.retail.models.Shop;
 import java.util.List;
+
+import shop.retail.models.Shop;
 
 
 /**
