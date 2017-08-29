@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -21,4 +22,9 @@ public class ShopLocatorTestConfiguration {
 	public RetailShopDao retailShopDao() {
 		return Mockito.mock(RetailShopDao.class);
 	}
+	
+	@Bean
+    public static PropertySourcesPlaceholderConfigurer propertiesResolver() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 }

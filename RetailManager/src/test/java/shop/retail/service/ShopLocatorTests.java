@@ -32,8 +32,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
@@ -43,6 +45,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @ContextConfiguration(classes = {ShopLocatorTestConfiguration.class})
 @RunWith(SpringJUnit4ClassRunner.class)
+@TestPropertySource(properties = {
+	    "GEO_API_KEY=AIzaSyA0I0_VRGOuh-CFMjWBQGI2ZX7rfluxMtA",
+})
 public class ShopLocatorTests {
 	
 	@Autowired
@@ -51,10 +56,26 @@ public class ShopLocatorTests {
 	@Autowired
 	private ShopLocator shopLocator;
 	
+	LatLng locationToTest = null;
+	
+	@Value("${GEO_API_KEY}")
+	String geoApiKey;
+	
+	@Test
+	public void testValueSetup() {
+	    assertEquals("AIzaSyA0I0_VRGOuh-CFMjWBQGI2ZX7rfluxMtA", geoApiKey);
+	}
+	
 	@Before
 	public void setup(){
 		MockitoAnnotations.initMocks(this);
 		
+	}
+	
+	@Before
+	public void setData() throws Exception {
+		locationToTest = setLocationFromGoogleApi("Pune - Bengaluru Hwy, Pune"
+				.concat(",").concat(411014 + ""));
 	}
 	
 	private Shop buildShopObject(String name, String number, int post,
@@ -100,6 +121,17 @@ public class ShopLocatorTests {
 	}
 	
 	@Test
+	public void testGetShopById(){
+		Shop Pune = buildShopObject("Shop at Pune", "Number 2", 900, 73.8796,
+				18.5529);
+		Pune.setShopId(1L);
+		when(retailShopDao.getShopById(Pune.getShopId())).thenReturn(Pune);
+		Shop result = shopLocator.getShopById(Pune.getShopId());
+		assertEquals(1L, result.getShopId());
+		assertEquals("Shop at Pune", result.getShopName());
+	}
+	
+	@Test
 	public void testNearest() {
 		List<Shop> toDoList = new ArrayList<Shop>();
 		Shop Mumbai = buildShopObject("Shop  at Mumbai", "Number 1", 400307,
@@ -126,6 +158,53 @@ public class ShopLocatorTests {
 		Shop shop =shopLocator.findNearest("22.5726", "88.3639");
 		assertEquals(shop.getShopName(),Delhi.getShopName());
 		
+	}
+	
+	@Test
+	public void addShop(){
+		Shop Pune = buildShopObject("Shop at Pune", "Number 2", 900, 73.8796,
+				18.5529);
+		when(retailShopDao.addShop(Pune)).thenReturn(Pune);
+		Shop result = shopLocator.addShop(Pune);
+//		assertEquals(8, result.getShopId());
+		assertEquals("Shop at Pune", result.getShopName());
+		assertEquals("Number 2", result.getShopAddress().getNumber());
+	}
+	
+	
+	@Test
+	public void deleteShop(){
+		Shop Pune = buildShopObject("Shop at Pune", "Number 2", 900, 73.8796,
+				18.5529);
+		shopLocator.deleteShop(Pune.getShopId());
+        verify(retailShopDao, times(1)).deleteShop(Pune.getShopId());
+	}
+	
+	@Test
+	public void testGeoApiResolver() {
+		String address = "Pune - Bengaluru Hwy, Pune".concat(",").concat(
+				411014 + "");
+		LatLng location = ShopLocatorImpl.geoApiResolver(address);
+		assert (isSameLocation(location, locationToTest));
+	}
+	
+	private LatLng setLocationFromGoogleApi(String address) throws Exception {
+		GeoApiContext context = new GeoApiContext()
+				.setApiKey(geoApiKey);
+		GeocodingResult result = GeocodingApi.geocode(context, address).await()[0];
+		LatLng location = result.geometry.location;
+		return location;
+	}
+	
+	private boolean isSameLocation(LatLng l1, LatLng l2) {
+		if (l1 == null || l2 == null) {
+			return false;
+		}
+		if (l1.lat == l2.lat && l1.lng == l2.lng) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 /*	@Autowired
